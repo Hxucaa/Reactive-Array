@@ -10,71 +10,70 @@ import Quick
 import Nimble
 import ReactiveArray
 import ReactiveCocoa
-import Box
 
 class OperationSpec: QuickSpec {
-
+    
     override func spec() {
         
         var operation: Operation<Int>!
         
         describe("#map") {
             
-            context("when the operation is an `Initiate` operation") {
+            context("when the operation is an `.Initiate` operation") {
                 let data = [10, 20, 30]
                 beforeEach {
-                    operation = Operation.Initiate(values: Box(data))
+                    operation = Operation.Initiate(values: data)
                 }
                 
                 it("maps the value to be initiated") {
                     let mappedOperation = operation.map { $0 * 2 }
                     
-                    let areEqual = mappedOperation == Operation.Initiate(values: Box(data.map { $0 * 2}))
+                    let areEqual = mappedOperation == Operation.Initiate(values: data.map { $0 * 2})
                     expect(areEqual).to(beTrue())
                 }
                 
             }
             
-            context("when the operation is an `Append` operation") {
+            context("when the operation is an `.Append` operation") {
                 
                 beforeEach {
-                    operation = Operation.Append(value: Box(10))
+                    operation = Operation.Append(value: 10)
                 }
                 
                 it("maps the value to be appended") {
                     let mappedOperation = operation.map { $0 * 2 }
                     
-                    let areEqual = mappedOperation == Operation.Append(value: Box(20))
+                    let areEqual = mappedOperation == Operation.Append(value: 20)
                     expect(areEqual).to(beTrue())
                 }
                 
             }
             
-            context("when the operation is an `Extend` operation") {
+            context("when the operation is an `.AppendContentsOf` operation") {
                 let array = [1,2,3,4]
                 beforeEach {
-                    operation = Operation.Extend(values: Box(array))
+                    operation = Operation.AppendContentsOf(values: array)
                 }
                 it("should map the value to be extended") {
                     let mappedOperation = operation.map { $0 * 3 }
                     
-                    let areEqual = mappedOperation == Operation.Extend(values: Box(array.map { $0 * 3 }))
+                    let areEqual = mappedOperation == Operation.AppendContentsOf(values: array.map { $0 * 3 })
                     expect(areEqual).to(beTrue())
                 }
             }
             
-            context("when the operation is an `Insert` operation") {
+            context("when the operation is an `.Insert` operation") {
                 let original = 11
                 let index = 3
                 
                 beforeEach {
-                    operation = Operation.Insert(value: Box(11), atIndex: index)
+                    operation = Operation.Insert(value: 11, atIndex: index)
                 }
                 
                 it("should map the value to be inserted") {
                     let mappedOperation = operation.map { $0 * 4 }
                     
-                    let areEqual = mappedOperation == Operation.Insert(value: Box(original * 4), atIndex: index)
+                    let areEqual = mappedOperation == Operation.Insert(value: original * 4, atIndex: index)
                     expect(areEqual).to(beTrue())
                 }
             }
@@ -82,13 +81,13 @@ class OperationSpec: QuickSpec {
             context("when the operation is an `.Replace` operation") {
                 
                 beforeEach {
-                    operation = Operation.Replace(value: Box(10), atIndex: 5)
+                    operation = Operation.Replace(value: 10, atIndex: 5)
                 }
                 
                 it("maps the value to be replaced") {
                     let mappedOperation = operation.map { $0 * 2 }
                     
-                    let areEqual = mappedOperation == Operation.Replace(value: Box(20), atIndex: 5)
+                    let areEqual = mappedOperation == Operation.Replace(value: 20, atIndex: 5)
                     expect(areEqual).to(beTrue())
                 }
                 
@@ -112,13 +111,13 @@ class OperationSpec: QuickSpec {
             context("when the opearation is a `ReplaceAll` operation") {
                 
                 beforeEach {
-                    operation = Operation.ReplaceAll(values: Box([1,2,3,4]))
+                    operation = Operation.ReplaceAll(values: [1,2,3,4])
                 }
                 
                 it("replaces the original data with a new array") {
                     let mappedOperation = operation.map { $0 * 2 }
                     
-                    let areEqual = mappedOperation == Operation.ReplaceAll(values: Box([2,4,6,8]))
+                    let areEqual = mappedOperation == Operation.ReplaceAll(values: [2,4,6,8])
                     expect(areEqual).to(beTrue())
                 }
             }
@@ -129,20 +128,20 @@ class OperationSpec: QuickSpec {
             context("when the operation is an `Initiate` operation") {
                 let array = [1,2,3,4,5]
                 beforeEach {
-                    operation = Operation.Initiate(values: Box(array))
+                    operation = Operation.Initiate(values: array)
                 }
                 
                 it("returns .None") {
                     expect(operation.value).to(beNil())
                 }
             }
-        
+            
             context("when the operation is an `Append` operation") {
                 
                 let data = 10
                 
                 beforeEach {
-                    operation = Operation.Append(value: Box(data))
+                    operation = Operation.Append(value: data)
                 }
                 
                 it("returns the appended value") {
@@ -151,10 +150,10 @@ class OperationSpec: QuickSpec {
                 
             }
             
-            context("when the operation is an `Extend` operation") {
+            context("when the operation is an `AppendContentsOf` operation") {
                 let array = [1,2,3,4,5]
                 beforeEach {
-                    operation = Operation.Extend(values: Box(array))
+                    operation = Operation.AppendContentsOf(values: array)
                 }
                 
                 it("returns .None") {
@@ -167,7 +166,7 @@ class OperationSpec: QuickSpec {
                 let index = 1
                 
                 beforeEach {
-                    operation = Operation.Insert(value: Box(data), atIndex: index)
+                    operation = Operation.Insert(value: data, atIndex: index)
                 }
                 
                 it("should return the inserted value") {
@@ -179,7 +178,7 @@ class OperationSpec: QuickSpec {
                 let data = 10
                 
                 beforeEach {
-                    operation = Operation.Replace(value: Box(data), atIndex: 5)
+                    operation = Operation.Replace(value: data, atIndex: 5)
                 }
                 
                 it("returns the replaced value") {
@@ -204,7 +203,7 @@ class OperationSpec: QuickSpec {
                 let array = [1,2,3,4,5]
                 
                 beforeEach {
-                    operation = Operation.ReplaceAll(values: Box(array))
+                    operation = Operation.ReplaceAll(values: array)
                 }
                 
                 it("returns .None") {
@@ -234,7 +233,7 @@ class OperationSpec: QuickSpec {
                 let array = [1,2,3,4,5]
                 
                 beforeEach {
-                    operation = Operation.Initiate(values: Box(array))
+                    operation = Operation.Initiate(values: array)
                 }
                 
                 it("returns the value that's going to replace all") {
@@ -247,7 +246,7 @@ class OperationSpec: QuickSpec {
                 let data = 10
                 
                 beforeEach {
-                    operation = Operation.Append(value: Box(data))
+                    operation = Operation.Append(value: data)
                 }
                 
                 it("returns .None") {
@@ -256,12 +255,12 @@ class OperationSpec: QuickSpec {
                 
             }
             
-            context("when the operation is an `Extend` operation") {
+            context("when the operation is an `AppendContentsOf` operation") {
                 
                 let array = [1,2,3,4,5]
                 
                 beforeEach {
-                    operation = Operation.Extend(values: Box(array))
+                    operation = Operation.AppendContentsOf(values: array)
                 }
                 
                 it("returns the value that's going to replace all") {
@@ -275,7 +274,7 @@ class OperationSpec: QuickSpec {
                 let index = 1
                 
                 beforeEach {
-                    operation = Operation.Insert(value: Box(data), atIndex: index)
+                    operation = Operation.Insert(value: data, atIndex: index)
                 }
                 
                 it("returns .None") {
@@ -288,7 +287,7 @@ class OperationSpec: QuickSpec {
                 let data = 10
                 
                 beforeEach {
-                    operation = Operation.Replace(value: Box(data), atIndex: 5)
+                    operation = Operation.Replace(value: data, atIndex: 5)
                 }
                 
                 it("returns .None") {
@@ -309,12 +308,12 @@ class OperationSpec: QuickSpec {
                 
             }
             
-            context("when the operation is an ReplaceAll operation") {
+            context("when the operation is an `ReplaceAll` operation") {
                 
                 let array = [1,2,3,4,5]
                 
                 beforeEach {
-                    operation = Operation.ReplaceAll(values: Box(array))
+                    operation = Operation.ReplaceAll(values: array)
                 }
                 
                 it("returns the value that's going to replace all") {
@@ -322,7 +321,7 @@ class OperationSpec: QuickSpec {
                 }
             }
             
-            context("when the operation is an RemoveAll operation") {
+            context("when the operation is an `RemoveAll` operation") {
                 
                 beforeEach {
                     operation = Operation.RemoveAll(keepCapacity: true)

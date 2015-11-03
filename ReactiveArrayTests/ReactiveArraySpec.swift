@@ -10,30 +10,29 @@ import Quick
 import Nimble
 import ReactiveArray
 import ReactiveCocoa
-import Box
 
 private func waitForOperation<T>(
     fromProducer producer: SignalProducer<Operation<T>, NoError>,
-    #when: () -> (),
-    onInitiate: Box<[T]> -> () = {
+    when: () -> (),
+    onInitiate: [T] -> () = {
         fail("Invalid operation type: .Initiate(\($0))")
     },
-    onAppend: Box<T> -> () = {
+    onAppend: T -> () = {
         fail("Invalid operation type: .Append(\($0))")
     },
-    onExtend: Box<[T]> -> () = {
-        fail("Invalid operation type: .Extend(\($0))")
+    onAppendContentsOf: [T] -> () = {
+        fail("Invalid operation type: .AppendContentsOf(\($0))")
     },
-    onInsert: (Box<T>, Int) -> () = {
-        fail("Invalid operation type: .Insert(\($0), \($1.value))")
+    onInsert: (T, Int) -> () = {
+        fail("Invalid operation type: .Insert(\($0), \($1))")
     },
-    onReplace: (Box<T>, Int) -> () = {
-        fail("Invalid operation type: .Replace(\($0), \($1.value))")
+    onReplace: (T, Int) -> () = {
+        fail("Invalid operation type: .Replace(\($0), \($1))")
     },
     onDelete: Int -> () = {
         fail("Invalid operation type: .Delete(\($0))")
     },
-    onReplaceAll: Box<[T]> -> () = {
+    onReplaceAll: [T] -> () = {
         fail("Invalid operation type: .ReplaceAll(\($0))")
     },
     onRemoveAll: Bool -> () = {
@@ -42,27 +41,27 @@ private func waitForOperation<T>(
     ) {
         
         waitUntil { done in
-            producer |> start(next: { operation in
+            producer.startWithNext { operation in
                 switch operation {
-                case let .Initiate(boxedValues):
-                    onInitiate(boxedValues)
-                case let .Append(boxedValue):
-                    onAppend(boxedValue)
-                case let .Extend(boxedValues):
-                    onExtend(boxedValues)
-                case let .Insert(boxedValue, index):
-                    onInsert(boxedValue, index)
-                case let .Replace(boxedValue, index):
-                    onReplace(boxedValue, index)
+                case let .Initiate(values):
+                    onInitiate(values)
+                case let .Append(value):
+                    onAppend(value)
+                case let .AppendContentsOf(values):
+                    onAppendContentsOf(values)
+                case let .Insert(value, index):
+                    onInsert(value, index)
+                case let .Replace(value, index):
+                    onReplace(value, index)
                 case let .RemoveElement(index):
                     onDelete(index)
-                case let .ReplaceAll(boxedValues):
-                    onReplaceAll(boxedValues)
+                case let .ReplaceAll(values):
+                    onReplaceAll(values)
                 case let .RemoveAll(keepCapacity):
                     onRemoveAll(keepCapacity)
                 }
                 done()
-            })
+            }
             when()
         }
         
@@ -70,26 +69,26 @@ private func waitForOperation<T>(
 
 private func waitForOperation<T>(
     fromSignal signal: Signal<Operation<T>, NoError>,
-    #when: () -> (),
-    onInitiate: Box<[T]> -> () = {
+    when: () -> (),
+    onInitiate: [T] -> () = {
         fail("Invalid operation type: .Initiate(\($0))")
     },
-    onAppend: Box<T> -> () = {
+    onAppend: T -> () = {
         fail("Invalid operation type: .Append(\($0))")
     },
-    onExtend: Box<[T]> -> () = {
-        fail("Invalid operation type: .Extend(\($0))")
+    onAppendContentsOf: [T] -> () = {
+        fail("Invalid operation type: .AppendContentsOf(\($0))")
     },
-    onInsert: (Box<T>, Int) -> () = {
-        fail("Invalid operation type: .Insert(\($0), \($1.value))")
+    onInsert: (T, Int) -> () = {
+        fail("Invalid operation type: .Insert(\($0), \($1))")
     },
-    onReplace: (Box<T>, Int) -> () = {
-        fail("Invalid operation type: .Replace(\($0), \($1.value))")
+    onReplace: (T, Int) -> () = {
+        fail("Invalid operation type: .Replace(\($0), \($1))")
     },
     onDelete: Int -> () = {
         fail("Invalid operation type: .Delete(\($0))")
     },
-    onReplaceAll: Box<[T]> -> () = {
+    onReplaceAll: [T] -> () = {
         fail("Invalid operation type: .ReplaceAll(\($0))")
     },
     onRemoveAll: Bool -> () = {
@@ -98,31 +97,31 @@ private func waitForOperation<T>(
     ) {
         
         let producer = SignalProducer<Operation<T>, NoError> { (observer, disposable) in signal.observe(observer) }
-        waitForOperation(fromProducer: producer, when: when, onInitiate: onInitiate, onAppend: onAppend, onExtend: onExtend, onInsert: onInsert, onReplace: onReplace, onDelete: onDelete, onReplaceAll: onReplaceAll, onRemoveAll: onRemoveAll)
+        waitForOperation(fromProducer: producer, when: when, onInitiate: onInitiate, onAppend: onAppend, onAppendContentsOf: onAppendContentsOf, onInsert: onInsert, onReplace: onReplace, onDelete: onDelete, onReplaceAll: onReplaceAll, onRemoveAll: onRemoveAll)
 }
 
 private func waitForOperation<T>(
     fromArray array: ReactiveArray<T>,
-    #when: () -> (),
-    onInitiate: Box<[T]> -> () = {
+    when: () -> (),
+    onInitiate: [T] -> () = {
         fail("Invalid operation type: .Initiate(\($0))")
     },
-    onAppend: Box<T> -> () = {
+    onAppend: T -> () = {
         fail("Invalid operation type: .Append(\($0))")
     },
-    onExtend: Box<[T]> -> () = {
-        fail("Invalid operation type: .Extend(\($0))")
+    onAppendContentsOf: [T] -> () = {
+        fail("Invalid operation type: .AppendContentsOf(\($0))")
     },
-    onInsert: (Box<T>, Int) -> () = {
-        fail("Invalid operation type: .Insert(\($0), \($1.value))")
+    onInsert: (T, Int) -> () = {
+        fail("Invalid operation type: .Insert(\($0), \($1))")
     },
-    onReplace: (Box<T>, Int) -> () = {
-        fail("Invalid operation type: .Replace(\($0), \($1.value))")
+    onReplace: (T, Int) -> () = {
+        fail("Invalid operation type: .Replace(\($0), \($1))")
     },
     onDelete: Int -> () = {
         fail("Invalid operation type: .Delete(\($0))")
     },
-    onReplaceAll: Box<[T]> -> () = {
+    onReplaceAll: [T] -> () = {
         fail("Invalid operation type: .ReplaceAll(\($0))")
     },
     onRemoveAll: Bool -> () = {
@@ -130,7 +129,7 @@ private func waitForOperation<T>(
     }
     ) {
         
-        waitForOperation(fromSignal: array.signal, when: when, onInitiate: onInitiate, onAppend: onAppend, onExtend: onExtend, onInsert: onInsert, onReplace: onReplace, onDelete: onDelete, onReplaceAll: onReplaceAll, onRemoveAll: onRemoveAll)
+        waitForOperation(fromSignal: array.signal, when: when, onInitiate: onInitiate, onAppend: onAppend, onAppendContentsOf: onAppendContentsOf, onInsert: onInsert, onReplace: onReplace, onDelete: onDelete, onReplaceAll: onReplaceAll, onRemoveAll: onRemoveAll)
 }
 
 class ReactiveArraySpec: QuickSpec {
@@ -167,15 +166,15 @@ class ReactiveArraySpec: QuickSpec {
                     when: {
                         reactiveArray.append(5)
                     },
-                    onAppend: { boxedValue in
-                        expect(boxedValue.value).to(equal(5))
+                    onAppend: { value in
+                        expect(value).to(equal(5))
                     }
                 )
             }
             
         }
         
-        describe("#extend") {
+        describe("#appendContentsOf") {
             
             var originalCount: Int!
             let additionalArray = [5,6,7,8]
@@ -184,8 +183,8 @@ class ReactiveArraySpec: QuickSpec {
                 originalCount = reactiveArray.count
             }
             
-            it("should extend the array with an additional array of elements") {
-                reactiveArray.extend(additionalArray)
+            it("should appendContentsOf the array with an additional array of elements") {
+                reactiveArray.appendContentsOf(additionalArray)
                 
                 var newArray = reactiveArray.array
                 newArray.removeRange(0...(originalCount - 1))
@@ -194,21 +193,21 @@ class ReactiveArraySpec: QuickSpec {
             }
             
             it("should increment the number of elements in the array by the number of new elements") {
-                reactiveArray.extend(additionalArray)
+                reactiveArray.appendContentsOf(additionalArray)
                 
                 expect(reactiveArray.count).to(equal(originalCount + additionalArray.count))
             }
             
-            it("should signal an `Extend` operation") {
+            it("should signal an `appendContentsOf` operation") {
                 waitForOperation(
                     fromArray: reactiveArray,
                     when: {
-                        reactiveArray.extend(additionalArray)
+                        reactiveArray.appendContentsOf(additionalArray)
                     },
-                    onExtend: { boxedValues in
-                        originalData.extend(additionalArray)
+                    onAppendContentsOf: { values in
+                        originalData.appendContentsOf(additionalArray)
                         
-                        expect(boxedValues.value).to(equal(additionalArray))
+                        expect(values).to(equal(additionalArray))
                     }
                 )
             }
@@ -234,8 +233,8 @@ class ReactiveArraySpec: QuickSpec {
                     when: {
                         reactiveArray.insert(element, atIndex: index)
                     },
-                    onInsert: { (boxedValue, i) in
-                        expect(boxedValue.value).to(equal(element))
+                    onInsert: { (value, i) in
+                        expect(value).to(equal(element))
                         expect(i).to(equal(index))
                     }
                 )
@@ -258,8 +257,8 @@ class ReactiveArraySpec: QuickSpec {
                         when: {
                             reactiveArray.replace(5, atIndex: 1)
                         },
-                        onReplace: { (boxedValue, index) in
-                            expect(boxedValue.value).to(equal(5))
+                        onReplace: { (value, index) in
+                            expect(value).to(equal(5))
                             expect(index).to(equal(1))
                         }
                     )
@@ -277,15 +276,15 @@ class ReactiveArraySpec: QuickSpec {
             
             // TODO: Fix this case because this raises an exception that cannot
             // be caught
-//            context("when the index is out of bounds") {
-//
-//                it("raises an exception") {
-//                    expect {
-//                        array.replace(5, atIndex: array.count + 10)
-//                    }.to(raiseException(named: "NSInternalInconsistencyException"))
-//                }
-//
-//            }
+            //            context("when the index is out of bounds") {
+            //
+            //                it("raises an exception") {
+            //                    expect {
+            //                        array.replace(5, atIndex: array.count + 10)
+            //                    }.to(raiseException(named: "NSInternalInconsistencyException"))
+            //                }
+            //
+            //            }
             
         }
         
@@ -334,9 +333,9 @@ class ReactiveArraySpec: QuickSpec {
                     when: {
                         reactiveArray.replaceAll(data)
                     },
-                    onReplaceAll: { boxedValues in
-                        expect(boxedValues.value).to(equal(data))
-                        expect(boxedValues.value).toNot(equal(originalData))
+                    onReplaceAll: { values in
+                        expect(values).to(equal(data))
+                        expect(values).toNot(equal(originalData))
                     }
                 )
             }
@@ -349,12 +348,12 @@ class ReactiveArraySpec: QuickSpec {
                     let countBeforeOperation = reactiveArray.count
                     
                     reactiveArray.observableCount.producer
-                        |> take(2)
-                        |> collect
-                        |> start(next: { counts in
+                        .take(2)
+                        .collect()
+                        .startWithNext { counts in
                             expect(counts).to(equal([countBeforeOperation, 0]))
                             done()
-                        })
+                    }
                     
                     reactiveArray.removeAll(keepCapacity)
                 }
@@ -421,8 +420,8 @@ class ReactiveArraySpec: QuickSpec {
                         when: {
                             reactiveArray[1] = 5
                         },
-                        onReplace: { (boxedValue, index) in
-                            expect(boxedValue.value).to(equal(5))
+                        onReplace: { (value, index) in
+                            expect(value).to(equal(5))
                             expect(index).to(equal(1))
                         }
                     )
@@ -445,7 +444,7 @@ class ReactiveArraySpec: QuickSpec {
                 expect(mirror.array).to(equal(originalData.map { $0 + 10 }))
             }
             
-            context("when an `Append` is executed on the original array") {
+            context("when an `.Append` is executed on the original array") {
                 
                 it("signals a mapped `Append` operation") {
                     waitForOperation(
@@ -453,29 +452,29 @@ class ReactiveArraySpec: QuickSpec {
                         when: {
                             reactiveArray.append(5)
                         },
-                        onAppend: { boxedValue in
-                            expect(boxedValue.value).to(equal(15))
+                        onAppend: { value in
+                            expect(value).to(equal(15))
                         }
                     )
                 }
             }
             
-            context("when an `Extend` is executed on the original array") {
-                it("should signal a mapped `Extend` operation") {
+            context("when an `.AppendContentsOf` is executed on the original array") {
+                it("should signal a mapped `appendContentsOf` operation") {
                     let mappedNewElements = newElements.map { $0 + 10 }
                     waitForOperation(
                         fromArray: mirror,
                         when: {
-                            reactiveArray.extend(newElements)
+                            reactiveArray.appendContentsOf(newElements)
                         },
-                        onExtend: { boxedValues in
-                            expect(boxedValues.value).to(equal(mappedNewElements))
+                        onAppendContentsOf: { values in
+                            expect(values).to(equal(mappedNewElements))
                         }
                     )
                 }
             }
             
-            context("when an `Insert` is executed on the original array") {
+            context("when an `.Insert` is executed on the original array") {
                 it("should signal a mapped `Insert` operation") {
                     let newElement = 2
                     let index = 4
@@ -485,8 +484,8 @@ class ReactiveArraySpec: QuickSpec {
                         when: {
                             reactiveArray.insert(newElement, atIndex: index)
                         },
-                        onInsert: { boxedValue, i in
-                            expect(boxedValue.value).to(equal(newElement + 10))
+                        onInsert: { value, i in
+                            expect(value).to(equal(newElement + 10))
                             expect(i).to(equal(index))
                         }
                     )
@@ -501,15 +500,15 @@ class ReactiveArraySpec: QuickSpec {
                         when: {
                             reactiveArray[1] = 5
                         },
-                        onReplace: { (boxedValue, index) in
-                            expect(boxedValue.value).to(equal(15))
+                        onReplace: { (value, index) in
+                            expect(value).to(equal(15))
                             expect(index).to(equal(1))
                         }
                     )
                 }
             }
             
-            context("when a `RemoveAtIndex` is executed on the original array") {
+            context("when a `.RemoveAtIndex` is executed on the original array") {
                 
                 it("signals a mapped `RemoveAtIndex` operation") {
                     waitForOperation(
@@ -524,7 +523,7 @@ class ReactiveArraySpec: QuickSpec {
                 }
             }
             
-            context("when a `ReplaceAll` is executed on the original array") {
+            context("when a `.ReplaceAll` is executed on the original array") {
                 it("should signal a mapped `ReplaceAll` operation") {
                     let mappedNewElements = newElements.map { $0 + 10 }
                     waitForOperation(
@@ -532,15 +531,15 @@ class ReactiveArraySpec: QuickSpec {
                         when: {
                             reactiveArray.replaceAll(newElements)
                         },
-                        onReplaceAll: { boxedValues in
-                            expect(boxedValues.value).to(equal(mappedNewElements))
+                        onReplaceAll: { values in
+                            expect(values).to(equal(mappedNewElements))
                         }
                     )
                     
                 }
             }
             
-            context("when a `RemoveAll` is executed on the original array") {
+            context("when a `.RemoveAll` is executed on the original array") {
                 it("should signal a mapped `RemoveAll` operation") {
                     let keep = true
                     waitForOperation(
@@ -568,71 +567,67 @@ class ReactiveArraySpec: QuickSpec {
             
             context("when the array has elements") {
                 
-                it("signals an `Initiate` operation for each stored element") {
+                it("signals an `.Initiate` operation for each stored element") {
                     waitUntil { done in
-                        // This is needed to avoid a compiler error.
-                        // Probably a Swift bug
-                        // TODO: Check is this is still necessary in Swift 2.0
-                        let internalDone = done
                         
                         a.producer
-                            |> start(next: { operation in
-                                let result = operation == Operation.Initiate(values: Box(orignalDataArray))
+                            .startWithNext { operation in
+                                let result = operation == Operation.Initiate(values: orignalDataArray)
                                 expect(result).to(beTrue())
-                                internalDone()
-                            })
+                                done()
+                        }
                     }
                 }
                 
             }
             
-            context("when an `Append` operation is executed in the original array") {
+            context("when an `.Append` operation is executed in the original array") {
                 
                 it("forwards the operation") {
                     
                     waitForOperation(
-                        fromProducer: a.producer |> skip(1),
+                        fromProducer: a.producer.skip(1),
                         when: {
                             a.append(5)
                         },
-                        onAppend: { boxedValue in
-                            expect(boxedValue.value).to(equal(5))
+                        onAppend: { value in
+                            expect(value).to(equal(5))
                         }
                     )
                 }
                 
             }
             
-            context("when an `Extend` operation is executed in the original array") {
+            context("when an `.AppendContentsOf` operation is executed in the original array") {
                 
                 it("forwards the operation") {
                     let newElements = [1,2,3,4,5]
                     
                     waitForOperation(
-                        fromProducer: a.producer |> skip(1),  // skip the `Initiate` operations happened when the array is initialized.
+                        fromProducer: a.producer.skip(1),  // skip the `Initiate` operations happened when the array is initialized.
                         when: {
-                            a.extend(newElements)
+                            a.appendContentsOf(newElements)
                         },
-                        onExtend: { boxedValues in
-                            expect(boxedValues.value).to(equal(newElements))
+                        onAppendContentsOf: { values in
+                            expect(values).to(equal(newElements))
                         }
                     )
                 }
             }
             
-            context("when an `Insert` operation is executed in the original array") {
+            context("when an `.Insert` operation is executed in the original array") {
                 
                 it("forwards the operation") {
                     let newElement = 2
                     let index = 4
                     
                     waitForOperation(
-                        fromProducer: a.producer |> skip(1),  // skip the `Initiate` operations happened when the array is initialized.
+                        fromProducer: a.producer.skip(1),  // skip the `Initiate` operations happened when the array is initialized.
                         when: {
                             a.insert(newElement, atIndex: index)
                         },
-                        onInsert: { boxedValue, i in
-                            expect(boxedValue.value).to(equal(newElement))
+                        onInsert: { value, i in
+                            expect(value).to(equal(newElement))
                             expect(i).to(equal(index))
                         }
                     )
@@ -643,12 +638,12 @@ class ReactiveArraySpec: QuickSpec {
                 
                 it("forwards the operation") {
                     waitForOperation(
-                        fromProducer: a.producer |> skip(1), // Skips the operation triggered due to the array not being empty
+                        fromProducer: a.producer.skip(1), // Skips the operation triggered due to the array not being empty
                         when: {
                             a.replace(5, atIndex: 0)
                         },
-                        onReplace: { (boxedValue, index) in
-                            expect(boxedValue.value).to(equal(5))
+                        onReplace: { (value, index) in
+                            expect(value).to(equal(5))
                             expect(index).to(equal(0))
                         }
                     )
@@ -656,11 +651,11 @@ class ReactiveArraySpec: QuickSpec {
                 
             }
             
-            context("when a `RemoveAtIndex` operation is executed in the original array") {
+            context("when a `.RemoveAtIndex` operation is executed in the original array") {
                 
                 it("forwards the operation") {
                     waitForOperation(
-                        fromProducer: a.producer |> skip(1), // Skips the operation triggered due to the array not being empty
+                        fromProducer: a.producer.skip(1), // Skips the operation triggered due to the array not being empty
                         when: {
                             a.removeAtIndex(0)
                         },
@@ -672,29 +667,29 @@ class ReactiveArraySpec: QuickSpec {
                 
             }
             
-            context("when a `ReplaceAll` operation is executed in the original array") {
+            context("when a `.ReplaceAll` operation is executed in the original array") {
                 
                 it("forwards the operation") {
                     let newElements = [1,2,3,4,5]
                     
                     waitForOperation(
-                        fromProducer: a.producer |> skip(1),
+                        fromProducer: a.producer.skip(1),
                         when: {
                             a.replaceAll(newElements)
                         },
-                        onReplaceAll: { boxedValues in
-                            expect(boxedValues.value).to(equal(newElements))
+                        onReplaceAll: { values in
+                            expect(values).to(equal(newElements))
                         }
                     )
                 }
             }
             
-            context("when a `RemoveAll` operation is exeucte in the original array") {
+            context("when a `.RemoveAll` operation is exeucte in the original array") {
                 
                 it("forwards the operation") {
                     let keep = true
                     waitForOperation(
-                        fromProducer: a.producer |> skip(1),
+                        fromProducer: a.producer.skip(1),
                         when: {
                             a.removeAll(keep)
                         },
@@ -708,7 +703,7 @@ class ReactiveArraySpec: QuickSpec {
         
         describe("#signal") {
             
-            context("when an `Append` operation is executed") {
+            context("when an `.Append` operation is executed") {
                 
                 it("signals the operations") {
                     waitForOperation(
@@ -716,30 +711,30 @@ class ReactiveArraySpec: QuickSpec {
                         when: {
                             reactiveArray.append(5)
                         },
-                        onAppend: { boxedValue in
-                            expect(boxedValue.value).to(equal(5))
+                        onAppend: { value in
+                            expect(value).to(equal(5))
                         }
                     )
                 }
             }
             
-            context("when an `Extend` operation is executed") {
+            context("when an `.AppendContentsOf` operation is executed") {
                 let newElements = [1,2,3,4,5,6,7,8]
                 
                 it("should signal the operations") {
                     waitForOperation(
                         fromSignal: reactiveArray.signal,
                         when: {
-                            reactiveArray.extend(newElements)
+                            reactiveArray.appendContentsOf(newElements)
                         },
-                        onExtend: { boxedValues in
-                            expect(boxedValues.value).to(equal(newElements))
+                        onAppendContentsOf: { values in
+                            expect(values).to(equal(newElements))
                         }
                     )
                 }
             }
             
-            context("when an `Insert` opeartion is exeucted") {
+            context("when an `.Insert` opeartion is exeucted") {
                 it("should signal the operation") {
                     let newElement = 5
                     let index = 2
@@ -749,8 +744,8 @@ class ReactiveArraySpec: QuickSpec {
                         when: {
                             reactiveArray.insert(newElement, atIndex: index)
                         },
-                        onInsert: { boxedValue, i in
-                            expect(boxedValue.value).to(equal(newElement))
+                        onInsert: { value, i in
+                            expect(value).to(equal(newElement))
                             expect(i).to(equal(index))
                         }
                     )
@@ -765,8 +760,8 @@ class ReactiveArraySpec: QuickSpec {
                         when: {
                             reactiveArray.replace(5, atIndex: 1)
                         },
-                        onReplace: { (boxedValue, index) in
-                            expect(boxedValue.value).to(equal(5))
+                        onReplace: { (value, index) in
+                            expect(value).to(equal(5))
                             expect(index).to(equal(1))
                         }
                     )
@@ -774,7 +769,7 @@ class ReactiveArraySpec: QuickSpec {
                 
             }
             
-            context("when a `RemoveAtIndex` operation is executed") {
+            context("when a `.RemoveAtIndex` operation is executed") {
                 
                 it("signals the operations") {
                     waitForOperation(
@@ -790,7 +785,7 @@ class ReactiveArraySpec: QuickSpec {
                 
             }
             
-            context("when a `ReplaceAll` operation is executed in the original array") {
+            context("when a `.ReplaceAll` operation is executed in the original array") {
                 
                 it("forwards the operation") {
                     let newElements = [1,2,3,4,5]
@@ -800,14 +795,14 @@ class ReactiveArraySpec: QuickSpec {
                         when: {
                             reactiveArray.replaceAll(newElements)
                         },
-                        onReplaceAll: { boxedValues in
-                            expect(boxedValues.value).to(equal(newElements))
+                        onReplaceAll: { values in
+                            expect(values).to(equal(newElements))
                         }
                     )
                 }
             }
             
-            context("when a `RemoveAll` operation is exeucte in the original array") {
+            context("when a `.RemoveAll` operation is exeucte in the original array") {
                 
                 it("forwards the operation") {
                     let keep = true
@@ -835,16 +830,22 @@ class ReactiveArraySpec: QuickSpec {
                 producer = reactiveArray.observableCount.producer
             }
             
-            context("when an `Append` operation is executed") {
+            it("returns the initial amount of elements in the array") {
+                producer.startWithNext { count in
+                    expect(count).to(equal(countBeforeOperation))
+                }
+            }
+            
+            context("when an `.Append` operation is executed") {
                 
                 it("updates the count") {
                     waitUntil { done in
                         producer
-                            |> skip(1)
-                            |> start(next: { count in
+                            .skip(1)
+                            .startWithNext { count in
                                 expect(count).to(equal(countBeforeOperation + 1))
                                 done()
-                            })
+                        }
                         
                         reactiveArray.append(656)
                     }
@@ -852,33 +853,33 @@ class ReactiveArraySpec: QuickSpec {
                 
             }
             
-            context("when an `Extend` operation is executed") {
+            context("when an `.AppendContentsOf` operation is executed") {
                 
                 it("should update the count by the number of new elements") {
                     waitUntil { done in
                         producer
-                            |> take(2)
-                            |> collect
-                            |> start(next: { counts in
+                            .take(2)
+                            .collect()
+                            .startWithNext { counts in
                                 expect(counts).to(equal([countBeforeOperation, countBeforeOperation + newElements.count]))
                                 done()
-                            })
+                        }
                         
-                        reactiveArray.extend(newElements)
+                        reactiveArray.appendContentsOf(newElements)
                     }
                 }
             }
             
-            context("when an `Insert` operation is executed") {
+            context("when an `.Insert` operation is executed") {
                 it("should update the count by an increment of 1") {
                     waitUntil { done in
                         producer
-                            |> take(2)
-                            |> collect
-                            |> start(next: { counts in
+                            .take(2)
+                            .collect()
+                            .startWithNext { counts in
                                 expect(counts).to(equal([countBeforeOperation, countBeforeOperation + 1]))
                                 done()
-                            })
+                        }
                         
                         reactiveArray.insert(5, atIndex: 2)
                     }
@@ -890,12 +891,12 @@ class ReactiveArraySpec: QuickSpec {
                 it("does not update the count") {
                     waitUntil { done in
                         producer
-                            |> take(2)
-                            |> collect
-                            |> start(next: { counts in
+                            .take(2)
+                            .collect()
+                            .startWithNext { counts in
                                 expect(counts).to(equal([countBeforeOperation, countBeforeOperation]))
                                 done()
-                            })
+                        }
                         
                         reactiveArray.replace(657, atIndex: 1)
                         reactiveArray.append(656)
@@ -904,16 +905,16 @@ class ReactiveArraySpec: QuickSpec {
                 
             }
             
-            context("when a `RemoveAtIndex` operation is executed") {
+            context("when a `.RemoveAtIndex` operation is executed") {
                 
                 it("updates the count") {
                     waitUntil { done in
                         producer
-                            |> skip(1)
-                            |> start(next: { count in
-                            expect(count).to(equal(countBeforeOperation - 1))
-                            done()
-                        })
+                            .skip(1)
+                            .startWithNext { count in
+                                expect(count).to(equal(countBeforeOperation - 1))
+                                done()
+                        }
                         
                         reactiveArray.removeAtIndex(1)
                     }
@@ -921,17 +922,17 @@ class ReactiveArraySpec: QuickSpec {
                 
             }
             
-            context("when a `ReplaceAll` operation is executed") {
+            context("when a `.ReplaceAll` operation is executed") {
                 it("updates the count") {
                     
                     waitUntil { done in
                         producer
-                            |> take(2)
-                            |> collect
-                            |> start(next: { counts in
+                            .take(2)
+                            .collect()
+                            .startWithNext { counts in
                                 expect(counts).to(equal([countBeforeOperation, newElements.count]))
                                 done()
-                            })
+                        }
                         
                         reactiveArray.replaceAll(newElements)
                     }
@@ -942,12 +943,12 @@ class ReactiveArraySpec: QuickSpec {
                 it("updates the count") {
                     waitUntil { done in
                         producer
-                            |> take(2)
-                            |> collect
-                            |> start(next: { counts in
+                            .take(2)
+                            .collect()
+                            .startWithNext { counts in
                                 expect(counts).to(equal([countBeforeOperation, 0]))
                                 done()
-                            })
+                        }
                         
                         reactiveArray.removeAll(true)
                     }
@@ -986,7 +987,7 @@ class ReactiveArraySpec: QuickSpec {
         describe("startIndex") {
             
             context("when the array is not empty") {
-
+                
                 it("returns the index of the first element") {
                     expect(reactiveArray.startIndex).to(equal(0))
                 }
