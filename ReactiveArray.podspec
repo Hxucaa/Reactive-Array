@@ -9,7 +9,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "ReactiveArray"
-  s.version          = "0.2.0"
+  s.version          = "0.6.0"
   s.summary          = "Reactive array for ReactiveCocoa."
   s.description      = <<-DESC
                        An array class implemented in Swift that can be observed using ReactiveCocoa's Signals.
