@@ -861,7 +861,9 @@ class ReactiveArraySpec: QuickSpec {
                             .take(2)
                             .collect()
                             .startWithNext { counts in
-                                expect(counts).to(equal([countBeforeOperation, countBeforeOperation + newElements.count]))
+                                expect(counts[0]).to(equal(countBeforeOperation))
+                                expect(counts[1]).to(equal(countBeforeOperation + newElements.count))
+                                expect(counts.count).to(equal(2))
                                 done()
                         }
                         
@@ -877,7 +879,9 @@ class ReactiveArraySpec: QuickSpec {
                             .take(2)
                             .collect()
                             .startWithNext { counts in
-                                expect(counts).to(equal([countBeforeOperation, countBeforeOperation + 1]))
+                                expect(counts[0]).to(equal(countBeforeOperation))
+                                expect(counts[1]).to(equal(countBeforeOperation + 1))
+                                expect(counts.count).to(equal(2))
                                 done()
                         }
                         
@@ -894,7 +898,9 @@ class ReactiveArraySpec: QuickSpec {
                             .take(2)
                             .collect()
                             .startWithNext { counts in
-                                expect(counts).to(equal([countBeforeOperation, countBeforeOperation]))
+                                expect(counts[0]).to(equal(countBeforeOperation))
+                                expect(counts[1]).to(equal(countBeforeOperation))
+                                expect(counts.count).to(equal(2))
                                 done()
                         }
                         
@@ -930,7 +936,9 @@ class ReactiveArraySpec: QuickSpec {
                             .take(2)
                             .collect()
                             .startWithNext { counts in
-                                expect(counts).to(equal([countBeforeOperation, newElements.count]))
+                                expect(counts[0]).to(equal(countBeforeOperation))
+                                expect(counts[1]).to(equal(newElements.count))
+                                expect(counts.count).to(equal(2))
                                 done()
                         }
                         
@@ -946,7 +954,9 @@ class ReactiveArraySpec: QuickSpec {
                             .take(2)
                             .collect()
                             .startWithNext { counts in
-                                expect(counts).to(equal([countBeforeOperation, 0]))
+                                expect(counts[0]).to(equal(countBeforeOperation))
+                                expect(counts[1]).to(equal(0))
+                                expect(counts.count).to(equal(2))
                                 done()
                         }
                         
