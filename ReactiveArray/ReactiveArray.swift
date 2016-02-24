@@ -9,7 +9,7 @@
 import Foundation
 import ReactiveCocoa
 
-public final class ReactiveArray<T>: MutableCollectionType {
+public class ReactiveArray<T>: MutableCollectionType {
     
     public typealias OperationProducer = SignalProducer<Operation<T>, NoError>
     public typealias OperationSignal = Signal<Operation<T>, NoError>
